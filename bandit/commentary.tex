@@ -1,0 +1,87 @@
+\documentclass[a4j,twocolumn]{jarticle}
+%\usepackage[dvipdfm]{graphicx} 
+\usepackage[dvipdfmx]{graphicx} 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\setlength{\columnseprule}{0pt} 
+\setlength{\columnsep}{2zw} 
+\setlength{\textheight}{26cm} 
+\setlength{\topmargin}{-2.5cm} 
+\setlength{\textwidth}{17.2cm} 
+\setlength{\oddsidemargin}{-0.6cm} 
+%\setlength{\columnseprule}{0pt}
+%\setlength{\columnsep}{2zw}
+%\setlength{\leftmargin}{10pt}
+\pagestyle{empty}
+
+\begin{document}
+\newcommand{\vv}[1]{\mbox{\boldmath{$#1$}}}
+\def\e{{\rm e}}
+\topmargin -2.5cm
+\textheight 26cm
+%\textheight 25.5cm
+\raggedbottom
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\twocolumn[\
+\begin{center}
+{\Large {\bf bandit algorithmによるLPの最適化 }}
+\end{center}
+\begin{flushright}
+開発チーム~~上原隆寛
+\end{flushright}
+]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{はじめに}
+web広告において、より効果的な広告を表示するための代表的な方法として、ABテストがある。
+優れた効果を持つものをA,劣っているものをBとした時に、事前情報がない状態でABテストを行うと、
+統計的に十分な試行回数までAもBも平等に扱うことになる。
+統計的に有意差が出るまでの期間、BもAと同じだけ選択し続けるのは無駄が大きく、大きな機会損失であると言える。
+
+bandit algorithmはk回目の選択を、k-1回目までの情報を元に判断するアルゴリズムである。k回目まででAが優れている場合一定の確率で
+Aを選択し、残りの確率でB, C, Dの効果を探索しに行くことを選択する。これは言い換えると、他の選択肢の効果を知るための探索的選択を行いつつも、できるだけその
+時点での最適解を選択するということである。
+
+任意のk回目の選択を最適化することはつまり、累積報酬を最大化することであり、この点においてABテストに比べて優れていることがわかる。
+
+今回はこのbandit algorithmをLPに適用し、効果を最大化したいと考えている。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-6mm}
+\section{$ベイズ推定の説明}
+ベイズ推定は大まかにいうと、起きた事象に合わせて仮定していた確率分布を更新していくという手法です。
+例えば、表と裏がどれくらいの確率で出るかわからないコインを投げるという事象を考えます。
+情報がないので、表と裏の出る確率をそれぞれ0.5, 0.5とします。
+コインを投げて表が出たら、表が出やすいコインである確率が高いため、0.5 → 0.6と更新します。
+そのあと裏が出たら0.6 →　0.5に更新し直します。
+(この数値の更新はかなり単純化しています。)
+このような更新を繰り返すことでその都度パラメータを更新していくのがベイズ推定です。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-6mm}
+\section{$Thompson Samplingの説明}
+今回はバンディットモデルの中で最も効率的であるアルゴリズムの一つであるThompson Samplingを使います。
+Thompson Samplingは各時点において、それぞれのアームを「そのアームが期待値最大である確率」で選択する。
+ここで、選択肢$i$の報酬$x_i$は真の期待値$mu_i$のベルヌーイ分布$Beta(x_i|\mu_i) = \mu_i^{x_i}(1 - \mu_i)^{1 - x_i}$から得られていると考えます。
+()
+
+選択肢$i$の報酬の分布をベルヌーイ分布として仮定したので、その事前確率と事後確率を$Beta(\alpha|\beta)$として、
+↓これ違うかも
+報酬が数段階設定されている場合は正規分布で仮定する。しかし、今回はその広告からの流入を考えるため、報酬は0か1であるためベルヌーイ分布を考えることにする。
+
+
+選択する際には、各選択肢の事前分布から乱数$mu_i^'$を生成し、$mu_i^'$が最大であるものを選択する。
+この選択方法を取ることによって、期待値が最大であることが見込まれる選択肢ほど選択されやすくなることがわかる。
+これはソースコードにおける、select_armにおいて行なっていることです。
+
+
+
+
+\begin{displaymath}
+ = E|\psi\rangle
+\end{displaymath}
+
+
+\end{document}
